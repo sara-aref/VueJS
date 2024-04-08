@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Books</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+      .more{
+        color: green;
+      }
+      .less{
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <div class="d-flex align-items-baseline justify-content-between bg-dark text-light p-2 m-2">
+        <a href="#" style="color: yellow;text-decoration:none;"  @click.prevent ="islistvisible = false">Books</a>
+        <div class="align-items-baseline d-flex">
+          <button class="btn btn-primary" @click="islistvisible = true">Wishlist</button>
+        </div>
+      </div>
+    
+      <div class="row bg-dark text-light p-2 m-2" v-if="islistvisible == false">
+        <div class="card m-auto my-2" v-for="book in books" style="width: 26rem;">
+            <img :src="book.imageLink" :title="book.title" style="width: 100%; height: 500px; object-fit: contain;">
+            <div class="d-flex justify-content-between">
+              <div>
+                  <h5>{{book.category}}</h5>
+              </div>
+              <div>
+                  <h5>{{book.author}}</h5>
+              </div>
+          </div>
+          <div class="d-flex justify-content-between">
+            <div>
+                <h5 :class="[book.pages>=50?'more':'less']">{{book.pages}}</h5>
+            </div>
+            <div>
+                <h5>{{formatCurrency(book.price)}}</h5>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+              <button class="btn btn-primary" @click="addToList(book)">Add To List</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- wishlist -->
+      <div class="d-flex align-items-baseline justify-content-between p-2 m-2" v-else>
+        <h3 class="w-100 text-center text-danger" v-if="list.items.length==0">No Book Added Yet</h3>
+        <table class="table table-bordered table-striped text-center" v-else>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Image</th>
+              <th>Author</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in list.items">
+              <td>{{item.book.title}}</td>
+              <td><img :src="item.book.imageLink" :title="item.book.title" style="width: 70px; height: 70px; object-fit: contain;"></td>
+              <td>{{item.book.author}}</td>
+              <td><button class="btn btn-danger h5" @click="removeFromList(index)">Remove</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    
+    </div>
+
+    <script src="./books.js"></script>
+    <script>
+      const app = Vue.createApp({
+        data:()=>({
+          books: books,
+          islistvisible: false,
+          list:{
+            items: []
+          }
+        }),
+        methods:{
+          addToList(book){
+            if(this.list.items.every(iitem=>iitem.book.title != book.title)){
+              this.list.items.push({book:book})
+            }
+          },
+          removeFromList(index) {
+            this.list.items.splice(index, 1);
+          },
+          formatCurrency(value){
+            return Intl.NumberFormat("ar-SA", {
+              style:"currency",
+              currency:"SAR",
+              minimumFractionDigits:0
+            }).format(value);
+          }
+        }
+      });
+
+      app.mount("#main");
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  </body>
+</html>
